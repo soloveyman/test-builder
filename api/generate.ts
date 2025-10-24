@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { GenerateRequestSchema } from "../lib/schemas.js";
 import { buildSystemPrompt, buildUserPrompt } from "../lib/prompt.js";
-import { callDeepSeekJSON } from "../lib/deepseek.js";
+import { callGrokJSON } from "../lib/grok.js";
 import { verifyHmac } from "../lib/hmac.js";
 import { validateAndScoreQuestions } from "../lib/validate.js";
 
@@ -45,7 +45,7 @@ questionTypes: params.questionTypes
 
 
 try {
-const llm = await callDeepSeekJSON({ system, user });
+const llm = await callGrokJSON({ system, user });
 let raw: any;
 try {
 raw = JSON.parse(llm.content);
@@ -60,7 +60,7 @@ const { questions, warnings } = validateAndScoreQuestions({ raw, contextText });
 
 return res.status(200).json({
 ok: true,
-provider: "deepseek",
+provider: "grok",
 durationMs: Date.now() - started,
 questions,
 warnings
