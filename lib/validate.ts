@@ -4,9 +4,36 @@ import { QuestionSchema } from "./schemas.js";
 function normalize(obj: any): any {
   const q = { ...obj };
   
+  // Map common field names to our schema
+  if (q.question && !q.prompt) {
+    q.prompt = q.question;
+  }
+  if (q.options && !q.choices) {
+    q.choices = q.options;
+  }
+  
   // Ensure id exists
   if (!q.id) {
     q.id = `q_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+  
+  // Ensure difficulty exists
+  if (!q.difficulty) {
+    q.difficulty = "medium";
+  }
+  
+  // Ensure explanation exists
+  if (!q.explanation) {
+    q.explanation = "No explanation provided";
+  }
+  
+  // Fix answer format for MCQ types
+  if (q.type === "mcq" || q.type === "mcq_single") {
+    if (typeof q.answer === "string" && q.choices) {
+      // Convert string answer to index
+      const answerIndex = q.choices.findIndex((choice: string) => choice === q.answer);
+      q.answer = answerIndex >= 0 ? answerIndex : 0;
+    }
   }
   
   // Normalize choices for MCQ types
