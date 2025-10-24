@@ -4,9 +4,9 @@ import { z } from "zod";
 export const GenerateRequestSchema = z.object({
   params: z.object({
     count: z.number().int().min(1).max(20),
-    type: z.enum(["mcq", "mcq_single", "mcq_multi", "tf", "complete", "cloze", "match", "order", "mixed"]),
     difficulty: z.enum(["easy", "medium", "hard"]),
-    locale: z.enum(["ru", "en"])
+    locale: z.enum(["ru", "en"]),
+    questionTypes: z.array(z.enum(["mcq", "mcq_single", "mcq_multi", "tf", "complete", "cloze", "match", "order"])).optional()
   }),
   context: z.object({
     text: z.string().optional(),

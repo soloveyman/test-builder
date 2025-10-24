@@ -38,8 +38,9 @@ const contextText = [context.text, JSON.stringify({ facts: context.facts, steps:
 // Промпты
 const system = buildSystemPrompt(params.locale);
 const user = buildUserPrompt({
-count: params.count, type: params.type, difficulty: params.difficulty, locale: params.locale,
-contextText: context.text, facts: context.facts, steps: context.steps, definitions: context.definitions, sourceRefs
+count: params.count, difficulty: params.difficulty, locale: params.locale,
+contextText: context.text, facts: context.facts, steps: context.steps, definitions: context.definitions, sourceRefs,
+questionTypes: params.questionTypes
 });
 
 

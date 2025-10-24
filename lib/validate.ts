@@ -1,4 +1,4 @@
-import { QuestionSchema } from "./schemas";
+import { QuestionSchema } from "./schemas.js";
 
 // Normalize question object to ensure consistent structure
 function normalize(obj: any): any {
@@ -77,6 +77,7 @@ export function validateAndScoreQuestions({ raw, contextText, minGrounding = 0.2
 const arr = Array.isArray(raw) ? raw : [];
 const valid: any[] = [];
 const warnings: string[] = [];
+const typeCounts: Record<string, number> = {};
 
 
 for (const item of arr) {
@@ -132,6 +133,9 @@ if (keys.length === 0 || keys.length > 3) { warnings.push(`cloze supports 1..3 b
 const g = groundingScore(textFromQuestion(parsed), contextText);
 if (g < minGrounding) { warnings.push(`low grounding (${g.toFixed(2)}) id=${(parsed as any).id}`); continue; }
 
+// Track question types for mixed generation feedback
+const questionType = (parsed as any).type;
+typeCounts[questionType] = (typeCounts[questionType] || 0) + 1;
 
 valid.push({ ...parsed, quality: Number(g.toFixed(2)) });
 } catch (e: any) {
@@ -139,6 +143,14 @@ warnings.push(`schema error: ${e.message}`);
 }
 }
 
+// Add mixed generation feedback
+const totalQuestions = valid.length;
+if (totalQuestions > 0) {
+const typeDistribution = Object.entries(typeCounts)
+.map(([type, count]) => `${type}: ${count} (${Math.round(count/totalQuestions*100)}%)`)
+.join(', ');
+warnings.push(`Generated mixed types: ${typeDistribution}`);
+}
 
 return { questions: valid, warnings };
 }
