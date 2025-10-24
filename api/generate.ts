@@ -77,8 +77,23 @@ try {
 raw = JSON.parse(llm.content);
 } catch (parseError) {
 console.warn("Failed to parse Grok response as JSON, attempting fallback:", parseError);
-const maybe = JSON.parse(llm.content || "{}");
-raw = Array.isArray(maybe) ? maybe : (maybe.questions || []);
+console.log("Raw response:", llm.content?.substring(0, 200) + "...");
+
+// Try to extract JSON from the response
+let jsonContent = llm.content || "{}";
+const jsonMatch = jsonContent.match(/\[[\s\S]*\]/);
+if (jsonMatch) {
+  jsonContent = jsonMatch[0];
+  console.log("Extracted JSON array:", jsonContent.substring(0, 100) + "...");
+}
+
+try {
+  const maybe = JSON.parse(jsonContent);
+  raw = Array.isArray(maybe) ? maybe : (maybe.questions || []);
+} catch (secondError) {
+  console.error("Second JSON parse attempt failed:", secondError);
+  raw = [];
+}
 }
 
 console.log(`Parsed ${Array.isArray(raw) ? raw.length : 0} questions from Grok`);

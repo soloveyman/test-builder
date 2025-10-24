@@ -22,7 +22,8 @@ export function buildSystemPrompt(locale: "ru" | "en") {
     
     
     const en = `You generate exam questions for HoReCa staff. Use ONLY the provided context. No external knowledge.
-    Return a pure JSON array of questions with MIXED TYPES. Automatically choose appropriate question types based on context.
+    Return ONLY a pure JSON array of questions with MIXED TYPES. No explanations, no markdown, no additional text - just the JSON array.
+    Automatically choose appropriate question types based on context.
     Supported types: mcq_single (alias mcq), mcq_multi, tf, complete, cloze, match, order.
     
     MIXING STRATEGY:
